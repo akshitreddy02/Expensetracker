@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personal Expense Tracker</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <link rel="stylesheet" href="index.css">
+
+</head>
+<body>
+    <div class="container">
+        <!-- Authentication Section -->
+         
+
+        <div id="auth-section" class="auth-container">
+            <h2 id="auth-title">Login to Expense Tracker</h2>
+            <div id="alert-container"></div>
+            
+            <form id="auth-form">
+                <div class="form-group" id="username-group">
+                    <label for="username">Username/Email:</label>
+                    <input type="text" id="username" required>
+                </div>
+                
+                <div class="form-group hidden" id="email-group">
+                    <label for="email">Email:</label>
+                    <input type="email" id="email">
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" required>
+                </div>
+                
+                <button type="submit" class="btn" id="auth-submit">Login</button>
+                <button type="button" class="btn btn-secondary" id="toggle-auth" style="margin-left: 10px;">
+                    Switch to Register
+                </button>
+            </form>
+        </div>
+
+        <!-- Main Application -->
+        <div id="main-app" class="hidden">
+            <!-- Header -->
+            <div class="header">
+                <h1>💰 Personal Expense Tracker</h1>
+                <div>
+                    <span id="welcome-text">Welcome, User!</span>
+                    <button class="btn btn-danger" id="logout-btn" style="margin-left: 15px;">Logout</button>
+                </div>
+            </div>
+
+            <!-- Tabs -->
+            <div class="tab-container">
+                <button class="tab active" data-tab="dashboard">Dashboard</button>
+                <button class="tab" data-tab="expenses">Expenses</button>
+                <button class="tab" data-tab="budget">Budget</button>
+            </div>
+
+            <!-- Dashboard Tab -->
+            <div id="dashboard-tab" class="tab-content">
+                <!-- Stats Cards -->
+                <div class="cards-grid">
+                    <div class="card stats-card">
+                        <div class="stat-number" id="total-spending">$0</div>
+                        <div class="stat-label">Total Spending</div>
+                    </div>
+                    <!-- <div><a href="/export/csv" class="btn btn-primary">Download CSV</a></div> -->
+                    <div class="card stats-card">
+                        <div class="stat-number" id="month-spending">$0</div>
+                        <div class="stat-label">This Month</div>
+                    </div>
+                    <div class="card stats-card">
+                        <div class="stat-number" id="expense-count">0</div>
+                        <div class="stat-label">Total Expenses</div>
+                    </div>
+                </div>
+
+                <!-- Charts -->
+                <div class="cards-grid">
+                    <div class="card">
+                        <h3>Spending by Category</h3>
+                        <div class="chart-container">
+                            <canvas id="categoryChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h3>Monthly Trend</h3>
+                        <div class="chart-container">
+                            <canvas id="trendChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Expenses Tab -->
+            <div id="expenses-tab" class="tab-content hidden">
+                <!-- Add Expense Form -->
+                <div class="card">
+                    <h3>Add New Expense</h3>
+                    <form id="expense-form">
+                        <div class="form-group">
+                            <label for="expense-amount">Amount (₹):</label>
+                            <input type="number" id="expense-amount" step="0.01" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="expense-category">Category:</label>
+                            <select id="expense-category" required>
+                                <option value="">Select Category</option>
+                                <option value="Food">Food</option>
+                                <option value="Transport">Transport</option>
+                                <option value="Entertainment">Entertainment</option>
+                                <option value="Shopping">Shopping</option>
+                                <option value="Bills">Bills</option>
+                                <option value="Healthcare">Healthcare</option>
+                                <option value="Education">Education</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="expense-description">Description:</label>
+                            <input type="text" id="expense-description" placeholder="Optional description">
+                        </div>
+                        <div class="form-group">
+                            <label for="expense-date">Date:</label>
+                            <input type="date" id="expense-date" required>
+                        </div>
+                        <button type="submit" class="btn">Add Expense</button>
+                        <button type="button" class="btn btn-secondary" id="cancel-edit" style="margin-left: 10px; display: none;">Cancel</button>
+                    </form>
+                </div>
+
+                <!-- Filters -->
+                <div class="card">
+                    <h3>Filter Expenses</h3>
+                    <div class="filters">
+                        <div class="form-group">
+                            <label for="filter-category">Category:</label>
+                            <select id="filter-category">
+                                <option value="">All Categories</option>
+                                <option value="Food">Food</option>
+                                <option value="Transport">Transport</option>
+                                <option value="Entertainment">Entertainment</option>
+                                <option value="Shopping">Shopping</option>
+                                <option value="Bills">Bills</option>
+                                <option value="Healthcare">Healthcare</option>
+                                <option value="Education">Education</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="filter-start-date">Start Date:</label>
+                            <input type="date" id="filter-start-date">
+                        </div>
+                        <div class="form-group">
+                            <label for="filter-end-date">End Date:</label>
+                            <input type="date" id="filter-end-date">
+                        </div>
+                        <div class="form-group">
+                            <button class="btn" id="apply-filters">Apply Filters</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Expenses List -->
+                <div class="card">
+                    <h3>Your Expenses</h3>
+                    <div id="expenses-list">
+                        <p>No expenses found.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Budget Tab -->
+            <div id="budget-tab" class="tab-content hidden">
+                <div class="cards-grid">
+                    <!-- Set Budget Form -->
+                    <div class="card">
+                        <h3>Set Monthly Budget</h3>
+                        <form id="budget-form">
+                            <div class="form-group">
+                                <label for="budget-category">Category:</label>
+                                <select id="budget-category" required>
+                                    <option value="">Select Category</option>
+                                    <option value="Food">Food</option>
+                                    <option value="Transport">Transport</option>
+                                    <option value="Entertainment">Entertainment</option>
+                                    <option value="Shopping">Shopping</option>
+                                    <option value="Bills">Bills</option>
+                                    <option value="Healthcare">Healthcare</option>
+                                    <option value="Education">Education</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="budget-amount">Budget Amount (₹):</label>
+                                <input type="number" id="budget-amount" step="0.01" required>
+                            </div>
+                            <button type="submit" class="btn">Set Budget</button>
+                        </form>
+                    </div>
+
+                    <!-- Budget Overview -->
+                    <div class="card">
+                        <h3>Budget vs Spending</h3>
+                        <div id="budget-list">
+                            <p>No budgets set.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- <script src="export.js"></script> -->
+   <script src="index.js"></script>
+</body>
+</html>
