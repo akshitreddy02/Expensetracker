@@ -6,7 +6,7 @@
         let trendChart = null;
 
         // API Base URL
-        const API_BASE_URL = 'http://localhost:5000/api';
+        const API_BASE_URL = 'https://expensetracker-1-frlg.onrender.com/api';
 
         // Initialize app
         document.addEventListener('DOMContentLoaded', function() {
